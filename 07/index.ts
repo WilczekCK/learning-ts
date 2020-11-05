@@ -2,6 +2,14 @@
 //Określane mianem szablonów lub typów poliformicznych.
 //Generyki to podstawowy budulec typów w naszych aplikacjach.
 //Czyli typ który sparametryzowany względem typów.
+
+//Kiedy uzywac?
+    /*
+        “Kiedy funkcja lub struktura danych ma działać z wieloma różnymi typami argumentów, np. wspomniana kolejka albo funkcja id
+    Kiedy funkcja lub struktura danych używa tego samego typu w wielu miejscach.”
+
+    Excerpt From: Michał Miszczyszyn. “TypeScript na poważnie”. Apple Books. */
+
 const x: Array<string> = ["a", "b", "c"];
 //Zapis Typ<inny typ> oznacza typ generyczny!
 
@@ -105,3 +113,31 @@ const x: Array<string> = ["a", "b", "c"];
             printName({ name: "Kasia" }); // OK
             printName({ name: "Michał", age: 22 }); // OK
             printName({ age: 22 }); // err
+
+    //Generyki wielu typów
+            //Generyki mogą przyjmować wiele parametrów a jedne typy mogą zaleeć od drugich
+
+            //funkcja przyjmująca dwie wartości i zwraca ich tuple
+            function makePair<T,U>(arg1: T, arg2:U): [T, U]{
+                return [arg1, arg2];
+            }
+
+            //Gdybyśmy potrzebowali stworzyć funkcje, która otrzymuje obiekt 
+            //oraz drugi, który rozszerza ten pierwszy
+
+            function defaults<T extends object, U extends T>(
+                    obj1: T,
+                    obj2: U
+                )  {
+                    return {...obj1, ...obj2}
+                }
+
+            defaults(1,2) //err, liczba nie rozszerza object
+            
+            defaults({}, {}) // OK
+            defaults({}, { a:123 }) //OK
+
+            defaults({b: "lala"}, { a:123 })
+            //bład, drugi obiekt nie ma pola "B"
+
+            defaults({b: "lala"}, {b: "lala", a:123})//ok
