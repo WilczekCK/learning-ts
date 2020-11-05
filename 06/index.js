@@ -12,6 +12,20 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, privateMap, value) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to set private field on non-instance");
+    }
+    privateMap.set(receiver, value);
+    return value;
+};
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+};
+var _name;
 //Klasa
 var User = /** @class */ (function () {
     function User() {
@@ -331,5 +345,21 @@ var User14 = /** @class */ (function () {
 var user14a = new User14("D");
 var user14b = new User14("D");
 var user14c = new User14("E");
-User14.compare(user14a, user14b);
-console.log(User14.compare(user14c, user14b));
+User14.compare(user14a, user14b); //true
+User14.compare(user14c, user14b); //false
+//Pola prywatne ES
+//Pole prywatne dodajemy w klasach z uzyciem znaczka #
+var Person = /** @class */ (function () {
+    function Person(name) {
+        _name.set(this, void 0);
+        __classPrivateFieldSet(this, _name, name);
+    }
+    Person.prototype.greet = function () {
+        console.log("Hello, my name is " + __classPrivateFieldGet(this, _name));
+    };
+    return Person;
+}());
+_name = new WeakMap();
+var person = new Person('John');
+//person.greet(); // => "Hello, my name is John"
+console.log(person);

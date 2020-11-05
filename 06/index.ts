@@ -412,5 +412,66 @@
             const user14b = new User14("D")
             const user14c = new User14("E")
 
-            User14.compare(user14a, user14b)
-            console.log(User14.compare(user14c, user14b))
+            User14.compare(user14a, user14b) //true
+            User14.compare(user14c, user14b) //false
+
+        //Pola prywatne ES
+            //Pole prywatne dodajemy w klasach z uzyciem znaczka #
+            //Pola # są unikalne w obrębie swojej klasy, nie zostaną nadpisane w trakcie dzieczenia
+            //Pola # zawsze deklarujemy przed uzyciem
+            class Person{
+                #name;
+
+                constructor(name){
+                    this.#name = name
+                }
+
+                greet() {
+                    console.log(`Hello, my name is ${this.#name}`)
+                }
+            }
+
+            const person = new Person('John');
+            //person.greet(); // => "Hello, my name is John"
+
+            //Pola # są unikalne w obrębie swojej klasy, nie zostaną nadpisane w trakcie dzieczenia
+
+            //Przykład bez #
+            class Character_without_hashtag {
+                foo = 10;
+                characterMethod(){
+                    return this.foo;
+                }
+            }
+
+            class User15 extends Character_without_hashtag {
+                foo = 20;
+
+                userMethod() {
+                    return this.foo;
+                }
+            }
+
+            const user15 = new User15();
+            user15.charcterMethod(); // => 20
+            user15.userMethod(); // => 20
+
+            //Przykład z #
+            class Character_with_hashtag {
+                #foo = 10;
+                characterMethod(){
+                    return this.#foo;
+                }
+            }
+
+            class User16 extends Character_with_hashtag {
+                #foo = 20;
+
+                userMethod() {
+                    return this.#foo;
+                }
+            }
+
+            const user16 = new User16();
+            user16.charcterMethod(); // => 10
+            user16.userMethod(); // => 20
