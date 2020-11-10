@@ -285,7 +285,7 @@
         //Zamiast typu X, w jego miejsce pozwala na uzycie typu nadrzednego do ok
         //a wiec, zamiast User mozemy uzyc Character
 
-        type Contravariant<T> = (z2: T) => void;
+        type Contravariant<T> = (x2: T) => void;
 
         let x2: Contravariant<Admin2> = {}
         let y2: Contravariant<User2> = {}
@@ -314,3 +314,7 @@
 
         y4 = x4; //błąd!
         y4 = z4; //błąd!
+
+
+        //Poddaje się, nie ogarniam co się odwala dalej :(
+        //Wróce tu jeszcze kiedyś!
