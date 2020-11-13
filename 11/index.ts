@@ -521,3 +521,164 @@
                 //...;
             }
             //Zapamietaj!
+
+        //Mapped types
+            //Tworzymy api 1 - do tworzenia, 2 - aktualizacji gracza
+            //Pierwsza z nich oczekuje, ze zostanie przesłany do API cały obiekt zaw. wszystkie pola z typu Player
+
+            type Player1 = { 
+                name: string;
+                hp: number;
+                position: [number, number];
+            }
+
+            function postPlayer(data: Player1){
+                //...
+            }
+
+            //Natomiast druga, sluzaca do wprowadzania zmian
+            //moze przyjąć tylko pojedyncze pola które mają być zaaktualizowane.
+            //Z pomocą przychodzą typy mapowane
+
+                //keyof
+                    //Sluzy do pobierania pól z typu i zwraca unie literałów
+                    
+                    type PlayerKeys = keyof Player;
+                    //Tutaj do PlayerKeys zostnaie przypisane
+                    //type PlayerKeys = "name" | "hp" | "position"§
+
+                //in keyof
+                    //Pozwala na stworzenie nowego typu obiektu na podstawie istniejącego
+                    type Player2 = {
+                        [K in keyof Player1]: Player1[K]
+                    }
+
+                    //Omówmy to:
+                     /*
+                        [K in keyof Player1] - Dla kazdego pola w typie Player1
+                        Player1[K] - Weź typ pola K z Player1
+                      */
+
+                //Modyfikatory
+                    
+                    //Znak zapytania ?
+                        //Dodanie "?" powoduje, ze wsystkie pola będą opcjonalne
+                        //Więc jest to kopia Player1 z tym, ze kazde z pol moze być pominięte
+                        type PlayerUpdate = {
+                            [K in keyof Player1]?: Player1[K];
+                        }
+                    
+                    //readonly
+                        //Podobnie co powyzej, tylko z polami readonly
+                        type PlayerUpdate2 = {
+                            readonly [K in keyof Player1]: Player1[K];
+                        }
+
+                    // + i -
+                        //Pozwala na dodawanie czy usuwanie cech (-readonly np.)
+
+                        type X = {
+                            readonly a?: string;
+                            readonly b?: number;
+                        }
+
+                        type Y = {
+                            -readonly [K in keyof X]-?: X[K];
+                        }
+
+                        //Otrzymamy:
+                        type Y_Result = {
+                            a: string,
+                            b: number;
+                        }
+
+                    //Mapowane typy generycznege
+
+                    type Partial1<T> = {
+                        [P in keyof T]?: T[P];
+                    }
+
+                    type Required1<T> = {
+                        [P in keyof T]-? : T[P];
+                    }
+
+                    type Readonly1<T> = {
+                        readonly [P in keyof T]: T[P];
+                    }
+
+                    type Writable1<T> = {
+                        -readonly [P in keyof T]: T[P];
+                    }
+
+                    //Wyjasnienie działania typu Record<K,T>
+                    type Record<K extends keyof any, T> = {}
+
+
+                    //Generyczny typ K extends keyof any umozliwia
+                    //nam podanie konkretnych typów (nazw) kluczy w tworzonym obiekcie
+
+                    type X2 = Record<"a" | "b", number>;
+                    type Y2 = {
+                        a: number;
+                        b: number;
+                    }
+
+                    type Z = Record<string, number>;
+                
+                //createElement
+                //definiowanie typu document.createElement bez przeładowań funkcji
+                //Najpierw tworzymy typ obiektu gdzie kluczami są nazwy elementów a wartościami ich typy
+
+                    interface TagToElement {
+                        a: HTMLAnchorElement;
+                        menu: HTMLAnchorElement;
+                        input: HTMLAnchorElement;
+                        //...
+                    }
+
+                    //Następnie: 
+
+                    interface Document {
+                        createElement<K extends keyof TagToElement>(
+                            tagName:K
+                        ,):TagToElement[K]
+                    }
+
+                    //W ten sposób, rózne wywołania będą miały rózny typ zwracany
+
+                    declare const document: Document;
+                    
+                    const a = document.createElement("a"); //typ HTMLAnchorElement
+                    const menu = document.createElement("menu"); //typ HTMLMenuElement
+                    const input = document.createElement("input"); //typ HTMLInputElement
+
+            //Tuple wariadyczne
+                //Sprawdzenie, czy coś jest tuplą było niebanalne.
+                //Więc powszechne było tworzenie wielu przeładowań tej samej funkcji
+                //kazde z inną liczbą elementów w tupli aby zachować bezpieczeństwo typów.
+
+                //TS 4.0 rozwiązał ten problem dodając tuple wariadyczne.
+
+                function concat<
+                T extends readonly unknown[], //1
+                U extends readonly unknown[], //2
+                >(arr1: T, arr2: U): [...T, ...U] { //3
+                    return [...arr1, ...arr2]; //4
+                }
+
+                /*
+                    Krok po kroku
+                    - 1-2
+                        Mówimy TS ze argumenty T i U to dowolne tuple
+                    - 3
+                        Podajemy typ zwracany funkcji, kluczowe.
+                        Inaczej TS uzna, ze zwracamy zwykłą tablice
+                */ 
+
+                const tuple1 = ["a"] as const;
+                const tuple2 = ["b", "c", "d"] as const;
+
+                const result2 = concat(tuple1, tuple2);
+                //ma typ ['a', 'b', 'c', 'd']
+
+                //Mozemy rowniez łączyć tuple wariadyczne, zwykłe typy i tablice
